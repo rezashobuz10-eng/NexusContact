@@ -17,8 +17,15 @@ export function getSupabaseConfig(): SupabaseConfig {
   const customUrl = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY_URL) : null;
   const customKey = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY_KEY) : null;
 
-  const envUrl = import.meta.env.VITE_SUPABASE_URL || '';
-  const envKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+  const envUrl =
+    import.meta.env.VITE_SUPABASE_URL ||
+    import.meta.env.NEXT_PUBLIC_SUPABASE_URL ||
+    '';
+  const envKey =
+    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+    import.meta.env.VITE_SUPABASE_ANON_KEY ||
+    import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    '';
 
   if (customUrl && customKey) {
     return {
@@ -277,11 +284,9 @@ export async function submitContactInquiry(data: ContactFormData): Promise<{
   }
 
   try {
-    const { data: insertedData, error } = await client
+    const { error } = await client
       .from('customer_contacts')
-      .insert([payload])
-      .select()
-      .single();
+      .insert([payload]);
 
     if (error) {
       console.error('Supabase insert error:', error);
@@ -313,7 +318,6 @@ export async function submitContactInquiry(data: ContactFormData): Promise<{
     return {
       success: true,
       message: 'Thank you for contacting us! Your information has been submitted successfully. We will contact you soon.',
-      data: insertedData as CustomerContact,
     };
   } catch (err: unknown) {
     console.error('Submission execution exception:', err);

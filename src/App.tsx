@@ -16,7 +16,12 @@ import { SupabaseSetupModal } from './components/SupabaseSetupModal';
 import { AdminDashboard } from './components/AdminDashboard';
 import { Language, Theme } from './types';
 
+import { getSupabaseConfig } from './lib/supabase';
+import { Database, ArrowRight } from 'lucide-react';
+
 export default function App() {
+  const [supabaseConfigState, setSupabaseConfigState] = useState(() => getSupabaseConfig());
+
   // Language State
   const [lang, setLang] = useState<Language>(() => {
     const saved = localStorage.getItem('nexus_lang') as Language;
@@ -110,6 +115,29 @@ export default function App() {
         currentView={currentView}
       />
 
+      {/* Connection Notice Banner if Supabase is unconfigured */}
+      {!supabaseConfigState.isConfigured && (
+        <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white text-xs py-2.5 px-4 font-medium shadow-sm">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+            <div className="flex items-center gap-2 justify-center">
+              <Database className="w-4 h-4 shrink-0 animate-bounce" />
+              <span>
+                {lang === 'bn'
+                  ? 'আপনার ওয়েবসাইটটি সরাসরি Supabase ডাটাবেজের সাথে কানেক্ট করতে চান?'
+                  : 'Ready to connect your website directly to your Supabase PostgreSQL database?'}
+              </span>
+            </div>
+            <button
+              onClick={() => setSupabaseModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-amber-900 font-bold hover:bg-amber-50 transition shadow-xs cursor-pointer text-[11px]"
+            >
+              <span>{lang === 'bn' ? 'সুপাবেজ কানেক্ট করুন' : 'Connect Supabase Now'}</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Content Area */}
       <main className="flex-1">
         {currentView === 'admin' ? (
@@ -152,7 +180,10 @@ export default function App() {
 
       <SupabaseSetupModal
         isOpen={supabaseModalOpen}
-        onClose={() => setSupabaseModalOpen(false)}
+        onClose={() => {
+          setSupabaseModalOpen(false);
+          setSupabaseConfigState(getSupabaseConfig());
+        }}
         lang={lang}
       />
     </div>

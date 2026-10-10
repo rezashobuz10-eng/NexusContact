@@ -2,5 +2,7 @@
   "name": "NexusContact - Professional Customer Inquiries & Admin Portal",
   "description": "Production-ready Customer Contact Management System powered by Supabase PostgreSQL, featuring real-time submissions, Row Level Security, bilingual English/Bangla UI, anti-spam defense, and an administrative dashboard.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

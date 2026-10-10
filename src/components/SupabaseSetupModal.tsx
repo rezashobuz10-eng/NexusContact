@@ -114,6 +114,11 @@ export const SupabaseSetupModal: React.FC<Props> = ({ isOpen, onClose, lang }) =
       const config = getSupabaseConfig();
       setUrl(config.url || '');
       setAnonKey(config.anonKey || '');
+      if (!config.isConfigured) {
+        setActiveTab('credentials');
+      } else {
+        setActiveTab('status');
+      }
       handleRunTest();
     }
   }, [isOpen]);
@@ -129,13 +134,14 @@ export const SupabaseSetupModal: React.FC<Props> = ({ isOpen, onClose, lang }) =
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!url.trim() || !anonKey.trim()) {
       alert(lang === 'bn' ? 'অনুগ্রহ করে ইউআরএল এবং কি উভয়ই প্রদান করুন।' : 'Please enter both URL and Anon Key.');
       return;
     }
     saveCustomSupabaseConfig(url, anonKey);
-    handleRunTest();
+    setActiveTab('status');
+    await handleRunTest();
   };
 
   const handleClear = () => {
@@ -298,16 +304,67 @@ export const SupabaseSetupModal: React.FC<Props> = ({ isOpen, onClose, lang }) =
           )}
 
           {activeTab === 'credentials' && (
-            <div className="space-y-4">
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                {lang === 'bn'
-                  ? 'আপনার সুপাবেজ প্রজেক্ট সেটিংস (API) থেকে প্রজেক্ট URL এবং অ্যানোনিমাস কি (anon / public) এখানে ইনপুট করতে পারেন:'
-                  : 'You can configure your Supabase Project URL and Anon/Publishable Key here or via environment variables:'}
-              </p>
+            <div className="space-y-5">
+              {/* Step by step guide banner */}
+              <div className="p-4 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/80 space-y-2.5">
+                <h5 className="font-bold text-xs text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5">
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  {lang === 'bn'
+                    ? 'কীভাবে আপনার Supabase প্রজেক্ট সংযুক্ত করবেন?'
+                    : 'How to get your Supabase credentials:'}
+                </h5>
+                <ol className="list-decimal list-inside text-xs text-slate-700 dark:text-slate-300 space-y-1.5 leading-relaxed">
+                  <li>
+                    <span>
+                      {lang === 'bn' ? 'প্রথমে ' : 'Go to '}
+                      <a
+                        href="https://supabase.com/dashboard"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-indigo-600 dark:text-indigo-400 font-semibold underline"
+                      >
+                        supabase.com/dashboard
+                      </a>
+                      {lang === 'bn' ? '-এ গিয়ে আপনার প্রজেক্টটি ওপেন করুন।' : ' and open your project.'}
+                    </span>
+                  </li>
+                  <li>
+                    <span>
+                      {lang === 'bn'
+                        ? 'বাম পাশের মেনু থেকে '
+                        : 'Navigate to '}
+                      <strong>Project Settings (⚙️) &rarr; API</strong>
+                      {lang === 'bn' ? '-তে ক্লিক করুন।' : '.'}
+                    </span>
+                  </li>
+                  <li>
+                    <span>
+                      {lang === 'bn'
+                        ? 'সেখান থেকে '
+                        : 'Copy the '}
+                      <strong>Project URL</strong>
+                      {lang === 'bn'
+                        ? ' কপি করে নিচের ১ম বক্সে দিন।'
+                        : ' into the first input box below.'}
+                    </span>
+                  </li>
+                  <li>
+                    <span>
+                      {lang === 'bn'
+                        ? 'এরপর Project API Keys সেকশন থেকে '
+                        : 'Copy the '}
+                      <strong className="text-emerald-600 dark:text-emerald-400">anon (public)</strong>
+                      {lang === 'bn'
+                        ? ' কি কপি করে নিচের ২য় বক্সে দিন।'
+                        : ' key into the second input box below.'}
+                    </span>
+                  </li>
+                </ol>
+              </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  VITE_SUPABASE_URL
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
+                  {lang === 'bn' ? '১. সুপাবেজ প্রজেক্ট URL (Project URL)' : '1. Supabase Project URL'}
                 </label>
                 <input
                   type="text"
@@ -319,8 +376,8 @@ export const SupabaseSetupModal: React.FC<Props> = ({ isOpen, onClose, lang }) =
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  VITE_SUPABASE_PUBLISHABLE_KEY (Anon Key)
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-1">
+                  {lang === 'bn' ? '২. অ্যানোনিমাস পাবলিক কি (Anon Public Key)' : '2. Anon Public API Key'}
                 </label>
                 <input
                   type="text"
@@ -330,23 +387,36 @@ export const SupabaseSetupModal: React.FC<Props> = ({ isOpen, onClose, lang }) =
                   className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs font-mono focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
                 <p className="text-[11px] text-slate-400 mt-1">
-                  Only the client-safe public/anon key should be provided here. Never supply your secret service_role key.
+                  {lang === 'bn'
+                    ? 'শুধুমাত্র পাবলিক/anon কি-টি ব্যবহার করুন। গোপন service_role কি কখনো প্রকাশ করবেন না।'
+                    : 'Only provide the client-safe public/anon key here. Never share your service_role secret key.'}
                 </p>
               </div>
 
-              <div className="flex items-center gap-3 pt-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleSave}
+                    className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm"
+                  >
+                    {lang === 'bn' ? 'সংরক্ষণ ও সংযোগ করুন (Save & Connect)' : 'Save & Connect'}
+                  </button>
+                  <button
+                    onClick={handleClear}
+                    className="px-3 py-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg text-xs font-medium flex items-center gap-1.5 transition"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    {lang === 'bn' ? 'রিসেট' : 'Reset'}
+                  </button>
+                </div>
+
                 <button
-                  onClick={handleSave}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition"
+                  type="button"
+                  onClick={() => setActiveTab('sql')}
+                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-semibold flex items-center gap-1"
                 >
-                  Save & Connect
-                </button>
-                <button
-                  onClick={handleClear}
-                  className="px-3 py-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg text-xs font-medium flex items-center gap-1.5 transition"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  Reset to .env Defaults
+                  <Database className="w-3.5 h-3.5" />
+                  <span>{lang === 'bn' ? 'SQL টেবিল স্ক্রিপ্ট দেখুন &rarr;' : 'View PostgreSQL Table SQL &rarr;'}</span>
                 </button>
               </div>
             </div>
