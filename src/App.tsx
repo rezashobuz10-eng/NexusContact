@@ -50,8 +50,12 @@ export default function App() {
   useEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
+      document.documentElement.style.colorScheme = 'dark';
     } else {
       document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
+      document.documentElement.style.colorScheme = 'light';
     }
     localStorage.setItem('nexus_theme', theme);
   }, [theme]);
@@ -103,7 +107,11 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col ${lang === 'bn' ? 'font-bangla' : ''}`}>
+    <div
+      className={`min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200 ${
+        lang === 'bn' ? 'font-bangla' : ''
+      }`}
+    >
       {/* Top Navigation */}
       <Navbar
         lang={lang}

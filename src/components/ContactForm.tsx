@@ -541,7 +541,7 @@ export const ContactForm: React.FC<Props> = ({
                   name="serviceType"
                   value={formData.serviceType || ''}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-sm transition focus:outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-500/20 cursor-pointer"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-sm transition focus:outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-500/20 cursor-pointer [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-slate-900 dark:[&>option]:text-slate-100"
                 >
                   <option value="">{t.form.serviceSelectPrompt}</option>
                   {t.servicesOptions.map((opt) => (
@@ -561,7 +561,7 @@ export const ContactForm: React.FC<Props> = ({
                   name="projectBudget"
                   value={formData.projectBudget || ''}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-sm transition focus:outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-500/20 cursor-pointer"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white text-sm transition focus:outline-none focus:ring-2 focus:border-indigo-500 focus:ring-indigo-500/20 cursor-pointer [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-slate-900 dark:[&>option]:text-slate-100"
                 >
                   <option value="">{t.form.budgetSelectPrompt}</option>
                   {t.budgetOptions.map((opt) => (
